@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const exphbs = require('express-handlebars');
 const dotenv = require('dotenv');
 
+const authRoutes = require('./routes/auth');
+
 dotenv.config();
 
 (async () => {
@@ -26,11 +28,11 @@ dotenv.config();
     app.get('/', (req, res) => {
       res.render('home', { title: 'Blog | Home', description: 'Lorem Ipsum' });
     });
-    app.get('/login', (req, res) => {
-      res.render('login', {
-        title: 'Blog | Login',
-        description: 'Lorem Ipsum',
-      });
+
+    app.use(authRoutes);
+
+    app.use((req, res) => {
+      res.status(404).render('errors/404', { title: 'Page not found' });
     });
 
     const PORT = process.env.PORT || 4000;

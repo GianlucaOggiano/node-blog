@@ -54,6 +54,9 @@ header {
   display: flex;
   background: #fff;
 }
+header.scrolled {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
 .header__nav {
   display: flex;
   justify-content: space-between;
