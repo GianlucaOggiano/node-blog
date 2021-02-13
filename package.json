@@ -19,10 +19,15 @@
   },
   "homepage": "https://github.com/GianlucaOggiano/node-blog#readme",
   "dependencies": {
+    "chalk": "^3.0.0",
+    "compression": "^1.7.4",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-handlebars": "^5.2.0",
-    "mongoose": "^5.11.15"
+    "feather-icons": "^4.28.0",
+    "helmet": "^4.4.1",
+    "mongoose": "^5.11.15",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
