@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node app.js",
-    "dev": "cross-env NODE_ENV=development nodemon app.js"
+    "dev": "cross-env NODE_ENV=development nodemon  app.js"
   },
   "repository": {
     "type": "git",
@@ -19,11 +19,16 @@
   },
   "homepage": "https://github.com/GianlucaOggiano/node-blog#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "chalk": "^3.0.0",
     "compression": "^1.7.4",
+    "connect-flash": "^0.1.1",
+    "connect-mongodb-session": "^2.4.1",
+    "csurf": "^1.11.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-handlebars": "^5.2.0",
+    "express-session": "^1.17.1",
     "feather-icons": "^4.28.0",
     "helmet": "^4.4.1",
     "mongoose": "^5.11.15",
