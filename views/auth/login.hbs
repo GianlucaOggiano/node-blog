@@ -1,0 +1,32 @@
+<div class="auth">
+  {{#if errorMessage}}
+    <small class="error">
+      {{errorMessage}}
+    </small>
+  {{/if}}
+  {{#if successMessage}}
+    <small class="success">
+      {{successMessage}}
+    </small>
+  {{/if}}
+  <form action="/login" method="POST" class="auth__form">
+    <input type="email" name="email" placeholder="Email" />
+    <input type="password" name="password" placeholder="Password" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+    <button type="submit">
+      Login
+    </button>
+  </form>
+  <p>
+    You are not register?
+    <a href="/signup">
+      Signup
+    </a>
+  </p>
+  <p>
+    Forgot password?
+    <a href="/reset">
+      Reset here!
+    </a>
+  </p>
+</div>
