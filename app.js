@@ -3,19 +3,23 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const exphbs = require('express-handlebars');
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 const helmet = require('helmet');
 const compression = require('compression');
+const csrf = require('csurf');
+const flash = require('connect-flash');
 const morgan = require('morgan');
 const chalk = require('chalk');
 const dotenv = require('dotenv');
 
+const blogRoutes = require('./routes');
 const authRoutes = require('./routes/auth');
 const { feather } = require('./helpers/hbs');
 
 dotenv.config();
 
 const isDevelopment = process.env.NODE_ENV === 'development';
-console.log('NODE_ENV', isDevelopment);
 
 (async () => {
   try {
@@ -27,7 +31,24 @@ console.log('NODE_ENV', isDevelopment);
     isDevelopment ? mongoose.set('debug', true) : null;
 
     const app = express();
+    const csrfProtection = csrf();
+    const store = new MongoDBStore({
+      uri: process.env.MONGO_URI,
+      collection: 'sessions',
+    });
 
+    app.use(express.urlencoded({ extended: false }));
+    app.use(
+      session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store,
+      })
+    );
+
+    app.use(csrfProtection);
+    app.use(flash());
     app.use(helmet());
     app.use(compression());
     isDevelopment ? app.use(morgan('dev')) : null;
@@ -40,32 +61,37 @@ console.log('NODE_ENV', isDevelopment);
       express.static(path.join(__dirname, 'node_modules', 'feather-icons'))
     );
 
-    app.get('/', (req, res) => {
-      res.render('home', { title: 'Blog | Home', description: 'Lorem Ipsum' });
+    app.use((req, res, next) => {
+      res.locals.isLogged = req.session.isLogged;
+      res.locals.csrfToken = req.csrfToken();
+      res.locals.errorMessage = req.flash('error');
+      res.locals.successMessage = req.flash('success');
+      next();
     });
 
+    app.use(blogRoutes);
     app.use(authRoutes);
 
     /* Not found error */
     app.use((req, res, next) => {
       const error = new Error('Page not found.');
-      error.status = 404;
-      next(error);
+      res.status(404).render('error/404', {
+        title: 'Page not found',
+        error: isDevelopment ? error.stack : '',
+      });
     });
 
     /* Global error handler */
     app.use((error, req, res, next) => {
-      const statusCode = error.status === 200 ? 500 : error.status;
-      res.status(statusCode).render('error', {
+      res.status(error.status).render('error/500', {
         title: error.message,
-        message: error.message,
-        error: isDevelopment ? error.stack : '',
+        message: isDevelopment ? error.message : 'Ops...Something went wrong.',
+        error: isDevelopment ? error.stack : 'We are working on it!',
       });
     });
 
     const PORT = process.env.PORT || 4000;
     app.listen(PORT, () => {
-      console.clear();
       console.log(
         chalk.cyan.bold(
           `Server started in ${process.env.NODE_ENV} mode on port ${PORT}`
@@ -74,5 +100,6 @@ console.log('NODE_ENV', isDevelopment);
     });
   } catch (error) {
     console.log(chalk.red(error));
+    process.exit(1);
   }
 })();
