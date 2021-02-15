@@ -8,7 +8,7 @@
 
 <!-- ![Twitter Follow](https://img.shields.io/twitter/follow/scottydocs?style=social) -->
 
-Node blog is a simple blog made with `Node Js` .
+Node blog is a simple blog made with `Node Js, Express Js and Handlebar` .
 
 TODO
 

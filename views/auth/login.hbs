@@ -9,7 +9,7 @@
       {{successMessage}}
     </small>
   {{/if}}
-  <form action="/login" method="POST" class="auth__form">
+  <form action="/login" method="POST" class="auth__form" novalidate>
     <input type="email" name="email" placeholder="Email" />
     <input type="password" name="password" placeholder="Password" />
     <input type="hidden" name="_csrf" value="{{csrfToken}}" />
