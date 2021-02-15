@@ -1,12 +1,15 @@
 const crypto = require('crypto');
 
 const router = require('express').Router();
+const Joi = require('@hapi/joi');
 
 const User = require('../models/User');
 const { isGuest } = require('../middleware/auth');
 const throwError = require('../utils/throwError');
+const { signupValidator, loginValidator } = require('../validators/auth');
 
 router.get('/signup', isGuest, (req, res) => {
+  console.log('FLASH', req.flash());
   res.render('auth/signup', {
     title: 'Signup',
     description: 'Lorem Ipsum',
@@ -17,6 +20,20 @@ router.post('/signup', async (req, res, next) => {
   const { username, email, password } = req.body;
 
   try {
+    const { error } = signupValidator.validate(
+      { email, password, username },
+      { abortEarly: true, errors: { wrap: { label: '' } } }
+    );
+
+    if (error) {
+      req.flash('error', error.message);
+      return res.status(422).render('auth/signup', {
+        title: 'Signup',
+        description: 'Lorem Ipsum',
+        errorMessage: error.message,
+      });
+    }
+
     /* Check if email already exist */
     const exist = await User.findOne({ email });
     if (exist) {
@@ -33,6 +50,7 @@ router.post('/signup', async (req, res, next) => {
     await user.save();
     res.redirect('/');
   } catch (error) {
+    console.log(error);
     const err = throwError(error);
     return next(err);
   }
@@ -49,6 +67,19 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    const { error } = loginValidator.validate(
+      { email, password },
+      { abortEarly: true, errors: { wrap: { label: '' } } }
+    );
+
+    if (error) {
+      req.flash('error', error.message);
+      return res.status(422).render('auth/login', {
+        title: 'Login',
+        description: 'Lorem Ipsum',
+        errorMessage: error.message,
+      });
+    }
     const user = await User.findOne({ email });
     if (!user || !(await user.matchPassword(password))) {
       req.flash('error', 'Invalid email or password.Please retry!');
