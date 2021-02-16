@@ -1,0 +1,11 @@
+<h1>
+  Create a new article here
+</h1>
+<form action="/articles/save" method="POST">
+  <input type="text" name="title" />
+  <textarea id="editor" name="body"></textarea>
+  <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+  <button type="submit">
+    Submit
+  </button>
+</form>
