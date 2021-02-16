@@ -10,7 +10,7 @@ module.exports = {
             stroke-linejoin="round"
             class="feather feather-${icon}"
           >
-            <use xlink:href="dist/feather-sprite.svg#${icon}"/>
+            <use xlink:href="/dist/feather-sprite.svg#${icon}"/>
         </svg>`;
   },
 };
