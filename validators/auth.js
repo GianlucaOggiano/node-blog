@@ -6,7 +6,7 @@ const username = Joi.string()
   .trim()
   .required()
   .label('Username');
-const email = Joi.string()
+const email = Joi.string() // TODO:possible check if email exist with custom()
   .email()
   .min(8)
   .max(254)

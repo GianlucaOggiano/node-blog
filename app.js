@@ -12,9 +12,12 @@ const flash = require('connect-flash');
 const morgan = require('morgan');
 const chalk = require('chalk');
 const dotenv = require('dotenv');
+const multer = require('multer');
+var FroalaEditor = require('./node_modules/wysiwyg-editor-node-sdk/lib/froalaEditor.js');
 
 const blogRoutes = require('./routes');
 const authRoutes = require('./routes/auth');
+const articleRoutes = require('./routes/article');
 const { feather } = require('./helpers/hbs');
 
 dotenv.config();
@@ -31,6 +34,23 @@ const isDevelopment = process.env.NODE_ENV === 'development';
     isDevelopment ? mongoose.set('debug', true) : null;
 
     const app = express();
+
+    /* Froala editor image uploads */
+    app.post('/image_upload', function (req, res) {
+      // Store image.
+      FroalaEditor.Image.upload(
+        req,
+        '/uploads/articles/',
+        function (err, data) {
+          // Return data.
+          if (err) {
+            return res.send(JSON.stringify(err));
+          }
+          res.send(data);
+        }
+      );
+    });
+
     const csrfProtection = csrf();
     const store = new MongoDBStore({
       uri: process.env.MONGO_URI,
@@ -38,6 +58,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
     });
 
     app.use(express.urlencoded({ extended: false }));
+    app.use(express.json());
     app.use(
       session({
         secret: process.env.SESSION_SECRET,
@@ -49,7 +70,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 
     app.use(csrfProtection);
     app.use(flash());
-    app.use(helmet());
+    // app.use(helmet());
     app.use(compression());
     isDevelopment ? app.use(morgan('dev')) : null;
 
@@ -57,6 +78,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
     app.set('view engine', '.hbs');
 
     app.use(express.static(path.join(__dirname, 'public')));
+    app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
     app.use(
       express.static(path.join(__dirname, 'node_modules', 'feather-icons'))
     );
@@ -71,6 +93,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 
     app.use(blogRoutes);
     app.use(authRoutes);
+    app.use('/articles', articleRoutes);
 
     /* Not found error */
     app.use((req, res, next) => {

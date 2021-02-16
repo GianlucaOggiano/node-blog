@@ -1,7 +1,6 @@
 const crypto = require('crypto');
 
 const router = require('express').Router();
-const Joi = require('@hapi/joi');
 
 const User = require('../models/User');
 const { isGuest } = require('../middleware/auth');
@@ -26,6 +25,7 @@ router.post('/signup', async (req, res, next) => {
     );
 
     if (error) {
+      //TODO:find best solution
       req.flash('error', error.message);
       return res.status(422).render('auth/signup', {
         title: 'Signup',
@@ -73,6 +73,7 @@ router.post('/login', async (req, res) => {
     );
 
     if (error) {
+      //TODO:find best solution
       req.flash('error', error.message);
       return res.status(422).render('auth/login', {
         title: 'Login',

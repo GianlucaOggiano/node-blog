@@ -6,3 +6,15 @@
 <h1>
   Welcome page.
 </h1>
+{{#each articles}}
+  <h2>
+    {{title}}
+  </h2>
+  <p>
+    {{{body}}}
+  </p>
+  <small>
+    Author :
+    {{author.username}}
+  </small>
+{{/each}}
